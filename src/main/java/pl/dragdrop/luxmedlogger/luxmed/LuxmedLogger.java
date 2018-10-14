@@ -17,8 +17,8 @@ import java.io.IOException;
 @Slf4j
 public class LuxmedLogger {
 
-    private String user = "";
-    private String password = "";
+    private String user = "test";
+    private String password = "test";
 
     private CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
 
