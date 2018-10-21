@@ -2,6 +2,10 @@ package pl.dragdrop.luxmedlogger.luxmed;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import pl.dragdrop.luxmedlogger.luxmed.search.Doctor;
+import pl.dragdrop.luxmedlogger.luxmed.search.SearchParams;
 import pl.dragdrop.luxmedlogger.luxmed.stages._4_ActivityPage;
 import pl.dragdrop.luxmedlogger.luxmed.stages._3_CoordinationPage;
 import pl.dragdrop.luxmedlogger.luxmed.stages._5_ReservationListPage;
@@ -15,12 +19,8 @@ import java.io.IOException;
 
 @NoArgsConstructor
 @Slf4j
+@Service
 public class LuxmedLogger {
-
-    private String user = "test";
-    private String password = "test";
-
-    private CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
 
     private _1_LoginPage login = new _1_LoginPage();
     private _2_MainPage main = new _2_MainPage();
@@ -30,25 +30,32 @@ public class LuxmedLogger {
     private _6_ReservationConfirmPage reservationConfirm = new _6_ReservationConfirmPage();
     private _7_FinalReservationPage finalReservation = new _7_FinalReservationPage();
 
-    public void findDoctor() throws IOException {
-        boolean search = true;
-        login.getLoginPage(wrapper);
-        main.getMainPage(wrapper, user, password);
-        coordination.getCoordinationPage(wrapper);
-        activity.getActivityPage(wrapper);
-        while (search) {
+    @Async
+    public void findDoctor(SearchParams params) {
+        log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
+        CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
+        do {
             try {
-                search = !reservationList.getReservationList(wrapper);
-                Thread.sleep(1_000);
+                wrapper.setFounded(false);
+                login.getLoginPage(wrapper);
+                main.getMainPage(wrapper, params.getLogin(), params.getPassword());
+                coordination.getCoordinationPage(wrapper);
+                activity.getActivityPage(wrapper);
+                while (!wrapper.getFounded() && wrapper.getLoggedIn()) {
+                    wrapper.setFounded(reservationList.getReservationList(wrapper, params));
+                    if (wrapper.getFounded()) {
+                        reservationConfirm.getReservation(wrapper);
+                        reservationConfirm.getReservationConfirm(wrapper);
+                        finalReservation.getFinalReservation(wrapper);
+                    }
+                    Thread.sleep(1_000);
+                }
             } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage() + " : " + Doctor.getDesc(params.getDoctorId()));
             } catch (InterruptedException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage() + " : " + Doctor.getDesc(params.getDoctorId()));
                 Thread.currentThread().interrupt();
             }
-        }
-        reservationConfirm.getReservation(wrapper);
-        reservationConfirm.getReservationConfirm(wrapper);
-        finalReservation.getFinalReservation(wrapper);
+        } while (wrapper.getKeepSearching());
     }
 }

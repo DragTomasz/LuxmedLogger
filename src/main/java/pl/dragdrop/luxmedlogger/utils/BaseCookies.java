@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class BaseCookies {
 
-    private static Map<String, String> baseCookies = new HashMap<>();
+    private Map<String, String> baseCookies = new HashMap<>();
 
-    public static Map<String, String> getBaseCookies() {
+    public Map<String, String> getBaseCookies() {
         baseCookies.put("_gcl_au", "1.1.778312396.1538256389");
         baseCookies.put("_ga", "GA1.2.1160993855.1538256389");
         baseCookies.put("_gid", "GA1.2.636928936.1538256389");

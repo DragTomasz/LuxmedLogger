@@ -26,6 +26,7 @@ public class _7_FinalReservationPage extends Page {
                         .execute();
         Document document = response.parse();
         log.info(document.toString());
+        wrapper.setKeepSearching(false);
     }
 
     private Map<String, String> getFinalReservationConfirmHeaders() {

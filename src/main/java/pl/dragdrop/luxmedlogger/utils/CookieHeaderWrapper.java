@@ -10,13 +10,21 @@ import java.util.Map;
 @NoArgsConstructor
 public class CookieHeaderWrapper {
 
-    private Map<String, String> cookies = BaseCookies.getBaseCookies();
+    private BaseCookies baseCookies = new BaseCookies();
+    private Map<String, String> cookies = baseCookies.getBaseCookies();
     private Map<String, String> headers = new HashMap<>();
     private String token;
     private String termId;
     private String key;
     private String variant;
-    public static int counter;
+    private Integer counter = 0;
+    private Boolean loggedIn = false;
+    private Boolean founded = false;
+    private Boolean keepSearching = true;
+
+    public Integer incrementCounter() {
+        return ++counter;
+    }
 
     public void addCookies(Map<String, String> mapCookies) {
         for (Map.Entry<String, String> map : mapCookies.entrySet()) {

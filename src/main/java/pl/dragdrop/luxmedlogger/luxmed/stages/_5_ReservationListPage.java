@@ -1,11 +1,12 @@
 package pl.dragdrop.luxmedlogger.luxmed.stages;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import pl.dragdrop.luxmedlogger.luxmed.search.Doctor;
+import pl.dragdrop.luxmedlogger.luxmed.search.SearchParams;
 import pl.dragdrop.luxmedlogger.utils.CookieHeaderWrapper;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class _5_ReservationListPage extends Page {
 
-    public boolean getReservationList(CookieHeaderWrapper wrapper) throws IOException {
+    public Boolean getReservationList(CookieHeaderWrapper wrapper, SearchParams params) throws IOException {
         Connection.Response response =
                 Jsoup.connect("https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find")
                         .timeout(10 * 1000)
@@ -26,12 +27,12 @@ public class _5_ReservationListPage extends Page {
                         .data("PayersCount", "1")
                         .data("CityId", "8")
                         .data("ClinicId", "9")
-                        .data("ServiceId", Doctor.Alergolog.id)
+                        .data("ServiceId", params.getDoctorId())
                         .data("LanguageId", "")
                         .data("SearchFirstFree", "false")
-                        .data("FromDate", "15-10-2018")
-                        .data("ToDate", "19-10-2018")
-                        .data("TimeOption", "Morning")
+                        .data("FromDate", params.getFromDate())
+                        .data("ToDate", params.getToDate())
+                        .data("TimeOfDay", params.getTimeOption())
                         .data("PayerId", "45800")
                         .data("__RequestVerificationToken", wrapper.getToken())
                         .data("IsDisabled", "")
@@ -39,9 +40,10 @@ public class _5_ReservationListPage extends Page {
                         .execute();
 
         Document document = response.parse();
+        wrapper.setLoggedIn(document.toString().contains("TOMASZ DRĄG"));
         Elements attribute = document.getElementsByAttribute("term-id");
         if (attribute.isEmpty()) {
-            log.info("Nie udało się: {}", ++CookieHeaderWrapper.counter);
+            if ((wrapper.incrementCounter() % 10) == 0) log.info("Nie udało się: {}, {}", wrapper.getCounter(), Doctor.getDesc(params.getDoctorId()));
             return false;
         } else {
             wrapper.setTermId(
@@ -79,12 +81,4 @@ public class _5_ReservationListPage extends Page {
         headers.put("User-Agent", userAgent);
         return headers;
     }
-
-    @AllArgsConstructor
-    private enum Doctor {
-        Alergolog("4387"), Laryngolog("4522"), Chirurg_Onkolog("4418");
-        private String id;
-    }
-
-
 }
