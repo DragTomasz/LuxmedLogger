@@ -40,7 +40,7 @@ public class _5_ReservationListPage extends Page {
                         .execute();
 
         Document document = response.parse();
-        wrapper.setLoggedIn(document.toString().contains("TOMASZ DRĄG"));
+        wrapper.setLoggedIn(document.toString().contains(params.getLogin().toLowerCase()));
         Elements attribute = document.getElementsByAttribute("term-id");
         if (attribute.isEmpty()) {
             if ((wrapper.incrementCounter() % 10) == 0) log.info("Nie udało się: {}, {}", wrapper.getCounter(), Doctor.getDesc(params.getDoctorId()));

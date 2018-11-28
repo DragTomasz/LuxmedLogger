@@ -32,8 +32,10 @@ public class LuxmedLogger {
 
     @Async
     public void findDoctor(SearchParams params) {
+
         log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
         CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
+
         do {
             try {
                 wrapper.setFounded(false);
@@ -41,6 +43,7 @@ public class LuxmedLogger {
                 main.getMainPage(wrapper, params.getLogin(), params.getPassword());
                 coordination.getCoordinationPage(wrapper);
                 activity.getActivityPage(wrapper);
+
                 while (!wrapper.getFounded() && wrapper.getLoggedIn()) {
                     wrapper.setFounded(reservationList.getReservationList(wrapper, params));
                     if (wrapper.getFounded()) {
@@ -48,14 +51,24 @@ public class LuxmedLogger {
                         reservationConfirm.getReservationConfirm(wrapper);
                         finalReservation.getFinalReservation(wrapper);
                     }
-                    Thread.sleep(1_000);
+                    sleepInSeconds(1);
                 }
+
             } catch (IOException e) {
-                log.error(e.getMessage() + " : " + Doctor.getDesc(params.getDoctorId()));
-            } catch (InterruptedException e) {
-                log.error(e.getMessage() + " : " + Doctor.getDesc(params.getDoctorId()));
-                Thread.currentThread().interrupt();
+                log.error(e.getMessage());
             }
+            sleepInSeconds(5);
         } while (wrapper.getKeepSearching());
+
     }
+
+    private void sleepInSeconds(long seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }

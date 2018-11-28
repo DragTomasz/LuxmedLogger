@@ -1,5 +1,6 @@
 package pl.dragdrop.luxmedlogger.luxmed.stages;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,6 +8,7 @@ import pl.dragdrop.luxmedlogger.utils.CookieHeaderWrapper;
 
 import java.io.IOException;
 
+@Slf4j
 public class _3_CoordinationPage extends Page{
 
     public CookieHeaderWrapper getCoordinationPage(CookieHeaderWrapper wrapper) throws IOException {

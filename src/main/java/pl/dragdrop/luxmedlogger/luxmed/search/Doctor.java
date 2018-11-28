@@ -7,7 +7,7 @@ import org.apache.logging.log4j.util.Strings;
 @AllArgsConstructor
 public enum Doctor {
 
-    Alergolog("4387"), Laryngolog("4522"), Chirurg_Onkolog("4418");
+    Alergolog("4387"), Laryngolog("4522"), Chirurg_Onkolog("4418"), Internista("4502");
     private String id;
 
     public String getId() {
