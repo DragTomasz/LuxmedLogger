@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import pl.dragdrop.luxmedlogger.luxmed.search.Doctor;
 import pl.dragdrop.luxmedlogger.luxmed.search.SearchParams;
 import pl.dragdrop.luxmedlogger.luxmed.stages._4_ActivityPage;
@@ -32,6 +33,10 @@ public class LuxmedLogger {
 
     @Async
     public void findDoctor(SearchParams params) {
+
+        if (StringUtils.isEmpty(params.getLogin()) || StringUtils.isEmpty(params.getPassword())) {
+            throw new BadCredentialException();
+        }
 
         log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
         CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
