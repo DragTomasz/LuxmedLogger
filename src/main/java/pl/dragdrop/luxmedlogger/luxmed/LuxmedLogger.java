@@ -14,6 +14,7 @@ import pl.dragdrop.luxmedlogger.luxmed.stages._2_MainPage;
 import pl.dragdrop.luxmedlogger.luxmed.stages._6_ReservationConfirmPage;
 import pl.dragdrop.luxmedlogger.luxmed.stages._7_FinalReservationPage;
 import pl.dragdrop.luxmedlogger.utils.CookieHeaderWrapper;
+import pl.dragdrop.luxmedlogger.utils.CredentialSupplier;
 
 import java.io.IOException;
 
@@ -33,14 +34,16 @@ public class LuxmedLogger {
     @Async
     public void findDoctor(SearchParams params) {
 
+
         log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
+        CredentialSupplier credential = new CredentialSupplier();
         CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
 
         do {
             try {
                 wrapper.setFounded(false);
                 login.getLoginPage(wrapper);
-                main.getMainPage(wrapper, params.getLogin(), params.getPassword());
+                main.getMainPage(wrapper, credential.getUser(), credential.getPassword());
                 coordination.getCoordinationPage(wrapper);
                 activity.getActivityPage(wrapper);
 
