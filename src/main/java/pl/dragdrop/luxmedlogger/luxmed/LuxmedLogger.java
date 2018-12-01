@@ -2,6 +2,7 @@ package pl.dragdrop.luxmedlogger.luxmed;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,6 +25,9 @@ import java.io.IOException;
 @Service
 public class LuxmedLogger {
 
+    @Autowired
+    CredentialSupplier credentials;
+
     private _1_LoginPage login = new _1_LoginPage();
     private _2_MainPage main = new _2_MainPage();
     private _3_CoordinationPage coordination = new _3_CoordinationPage();
@@ -34,21 +38,21 @@ public class LuxmedLogger {
 
     @Async
     public void findDoctor(SearchParams params) {
+        log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
 
+        CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
 
-        if (StringUtils.isEmpty(params.getLogin()) || StringUtils.isEmpty(params.getPassword())) {
+        credentials.loadCredential();
+
+        if (StringUtils.isEmpty(credentials.getUser()) || StringUtils.isEmpty(credentials.getPassword())) {
             throw new BadCredentialException();
         }
-
-        log.info("Starts thread looking for {}", Doctor.getDesc(params.getDoctorId()));
-        CredentialSupplier credential = new CredentialSupplier();
-        CookieHeaderWrapper wrapper = new CookieHeaderWrapper();
 
         do {
             try {
                 wrapper.setFounded(false);
                 login.getLoginPage(wrapper);
-                main.getMainPage(wrapper, credential.getUser(), credential.getPassword());
+                main.getMainPage(wrapper, credentials.getUser(), credentials.getPassword());
                 coordination.getCoordinationPage(wrapper);
                 activity.getActivityPage(wrapper);
 

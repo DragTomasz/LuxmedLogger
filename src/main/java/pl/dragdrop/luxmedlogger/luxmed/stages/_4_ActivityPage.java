@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class _4_ActivityPage extends Page {
 
-    public CookieHeaderWrapper getActivityPage(CookieHeaderWrapper wrapper) throws IOException {
+    public void getActivityPage(CookieHeaderWrapper wrapper) throws IOException {
         Connection.Response response =
                 Jsoup.connect("https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Coordination/Activity?actionId=90")
                         .userAgent(userAgent)
@@ -34,6 +34,5 @@ public class _4_ActivityPage extends Page {
 
         wrapper.addCookies(response.cookies());
         wrapper.setHeaders(response.headers());
-        return wrapper;
     }
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
 @Slf4j
 public class _3_CoordinationPage extends Page{
 
-    public CookieHeaderWrapper getCoordinationPage(CookieHeaderWrapper wrapper) throws IOException {
+    public void getCoordinationPage(CookieHeaderWrapper wrapper) throws IOException {
         Connection.Response response =
                 Jsoup.connect("https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Coordination")
                         .userAgent(userAgent)
@@ -21,10 +21,8 @@ public class _3_CoordinationPage extends Page{
                         .headers(wrapper.getHeaders())
                         .followRedirects(true)
                         .execute();
-        Document document = response.parse();
         wrapper.addCookies(response.cookies());
         wrapper.setHeaders(response.headers());
-        return wrapper;
     }
 
 }

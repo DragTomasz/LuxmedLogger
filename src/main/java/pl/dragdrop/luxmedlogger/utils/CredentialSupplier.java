@@ -1,6 +1,8 @@
 package pl.dragdrop.luxmedlogger.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,11 +11,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 @Slf4j
+@Configuration
 public class CredentialSupplier {
 
-    private String path = "C:\\Users\\Tomasz\\credentials.properties";
-    private File initialFile = new File(path);
-    private Properties properties = new Properties();
+    @Value("${credential.path}")
+    private String path;
 
     private String user;
     private String password;
@@ -26,10 +28,12 @@ public class CredentialSupplier {
         return password;
     }
 
-    void readCredential() {
+    public void loadCredential() {
+        File file = new File(path);
+        Properties properties = new Properties();
         InputStream targetStream;
         try {
-            targetStream = new FileInputStream(initialFile);
+            targetStream = new FileInputStream(file);
             properties.load(targetStream);
         } catch (IOException e) {
             log.error(e.getMessage());

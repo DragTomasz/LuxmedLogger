@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class _1_LoginPage extends Page{
 
-    public CookieHeaderWrapper getLoginPage(CookieHeaderWrapper wrapper) throws IOException {
+    public void getLoginPage(CookieHeaderWrapper wrapper) throws IOException {
         Connection.Response response =
                 Jsoup.connect("https://portalpacjenta.luxmed.pl/PatientPortal/Account/LogOn")
                         .userAgent(userAgent)
@@ -19,6 +19,5 @@ public class _1_LoginPage extends Page{
 
         wrapper.addCookies(response.cookies());
         wrapper.setHeaders(response.headers());
-        return  wrapper;
     }
 }
