@@ -39,6 +39,7 @@ public class _5_ReservationListPage extends Page {
                         .followRedirects(true)
                         .execute();
 
+
         Document document = response.parse();
         wrapper.setLoggedIn(document.toString().contains(params.getLogin().toLowerCase()));
         Elements attribute = document.getElementsByAttribute("term-id");
